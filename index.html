@@ -32,22 +32,9 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .header h1 {
-      margin: 0;
-      color: var(--primary);
-      font-size: 28px;
-    }
-
-    .header p {
-      margin-top: 6px;
-      color: #64748b;
-      font-size: 14px;
-    }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h1 { margin: 0; color: var(--primary); font-size: 28px; }
+    .header p { margin-top: 6px; color: #64748b; font-size: 14px; }
 
     .credits-badge {
       display: inline-block;
@@ -60,63 +47,33 @@
       margin-top: 10px;
     }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      font-size: 14px;
-    }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
 
     select, input[type="text"], textarea, input[type="file"] {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      box-sizing: border-box;
-      font-size: 14px;
-      background-color: #fff;
+      width: 100%; padding: 12px; border: 1px solid var(--border);
+      border-radius: 10px; box-sizing: border-box; font-size: 14px; background-color: #fff;
     }
 
-    select:focus, textarea:focus {
-      outline: 2px solid var(--primary);
-      border-color: transparent;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
     button {
-      width: 100%;
-      padding: 14px;
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
+      width: 100%; padding: 14px; background-color: var(--primary);
+      color: white; border: none; border-radius: 10px; font-size: 16px;
+      font-weight: bold; cursor: pointer; transition: background 0.2s;
     }
 
-    button:hover {
-      background-color: var(--primary-hover);
-    }
+    button:hover { background-color: var(--primary-hover); }
+    .bankak-btn { background-color: #16a34a; margin-top: 10px; }
+    .bankak-btn:hover { background-color: #15803d; }
 
-    .bankak-btn {
-      background-color: #16a34a;
-      margin-top: 10px;
+    /* صندوق عرض النتيجة */
+    #responseContainer {
+      margin-top: 24px; padding: 16px; border-radius: 12px;
+      background: #f1f5f9; border: 1px solid var(--border); display: none;
+      white-space: pre-line; line-height: 1.6;
     }
-
-    .bankak-btn:hover {
-      background-color: #15803d;
-    }
+    .loading { text-align: center; color: var(--primary); font-weight: bold; display: none; margin-top: 15px; }
   </style>
 </head>
 <body>
@@ -140,9 +97,7 @@
 
     <div class="form-group">
       <label for="grade">الصف الدراسي:</label>
-      <select id="grade">
-        <!-- يتم تحديثه ديناميكياً -->
-      </select>
+      <select id="grade"></select>
     </div>
   </div>
 
@@ -164,9 +119,9 @@
     <div class="form-group">
       <label for="mode">أسلوب الشرح:</label>
       <select id="mode">
-        <option value="both">نصي وصوتي</option>
         <option value="text">نصي فقط</option>
         <option value="audio">صوتي فقط</option>
+        <option value="both">نصي وصوتي</option>
       </select>
     </div>
   </div>
@@ -181,8 +136,11 @@
     <textarea id="prompt" rows="4" placeholder="اكتب سؤالك هنا أو اطلب شرح درس معين من المنهج..."></textarea>
   </div>
 
-  <button onclick="sendQuery()">ابدأ الشرح الآن 🚀</button>
+  <button id="submitBtn" onclick="sendQuery()">ابدأ الشرح الآن 🚀</button>
   <button class="bankak-btn" onclick="openPaymentModal()">شحن رصيد / اشتراك عبر بنكك 💳</button>
+
+  <div id="loading" class="loading">جاري تحضير الشرح من المعلم الذكي... ⏳</div>
+  <div id="responseContainer"></div>
 </div>
 
 <script>
@@ -205,22 +163,88 @@
     });
   }
 
-  // التحديث المبدئي للملف عند الفتح
   updateGrades();
 
-  function sendQuery() {
-    const text = document.getElementById('prompt').value;
-    if (!text.trim()) {
-      alert('الرجاء كتابة السؤال أو الدرس المطلوب شرحه أولاً.');
+  // تحويل الصورة إلى Base64
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  async function sendQuery() {
+    const promptText = document.getElementById('prompt').value;
+    const imageFile = document.getElementById('imageInput').files[0];
+    const loading = document.getElementById('loading');
+    const responseBox = document.getElementById('responseContainer');
+
+    if (!promptText.trim() && !imageFile) {
+      alert('الرجاء كتابة سؤال أو رفع صورة للدرس.');
       return;
     }
-    
-    alert('سيتم إرسال طلبك للمعلم الذكي...');
-    // سينقل البيانات لاحقاً إلى Vercel Backend
+
+    loading.style.display = 'block';
+    responseBox.style.display = 'none';
+
+    let imageBase64 = null;
+    let mimeType = null;
+
+    if (imageFile) {
+      imageBase64 = await toBase64(imageFile);
+      mimeType = imageFile.type;
+    }
+
+    const payload = {
+      stage: document.getElementById('stage').value,
+      grade: document.getElementById('grade').value,
+      subject: document.getElementById('subject').value,
+      prompt: promptText,
+      imageBase64: imageBase64,
+      mimeType: mimeType
+    };
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      loading.style.display = 'none';
+
+      if (data.result) {
+        responseBox.innerHTML = `<h3>💡 الشرح:</h3>` + data.result;
+        responseBox.style.display = 'block';
+        
+        // القراءة الصوتية إذا اختار خيار الصوتي
+        const mode = document.getElementById('mode').value;
+        if (mode === 'audio' || mode === 'both') {
+          speakText(data.result);
+        }
+      } else {
+        alert(data.error || 'حدث خطأ، حاول مرة أخرى.');
+      }
+    } catch (err) {
+      loading.style.display = 'none';
+      alert('تعذر الاتصال بالسيرفر. تأكد من إضافة GEMINI_API_KEY في Vercel.');
+    }
+  }
+
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ar-SA';
+      window.speechSynthesis.speak(utterance);
+    }
   }
 
   function openPaymentModal() {
-    alert('سيتم فتح نافذة الاشتراك والتسديد عبر بنكك.');
+    alert('طريقة الاشتراك عبر بنكك:\n1. قم بتحويل مبلغ الاشتراك لحساب بنكك.\n2. أرسل إيصال التحويل عبر الواتساب لتفعيل حسابك فوراً.');
   }
 </script>
 
