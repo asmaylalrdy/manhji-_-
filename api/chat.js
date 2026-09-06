@@ -13,23 +13,24 @@ export default async function handler(req, res) {
 
     const systemInstruction = `
 أنت معلم صبور، محترف، ومتخصص في المناهج التعليمية.
-المرحلة: ${stage} | الصف: ${grade} | المادة: ${subject}
+المرحلة: ${stage || 'غير محددة'} | الصف: ${grade || 'غير محدد'} | المادة: ${subject || 'عامة'}
 
 تعليمات الشرح:
-1. التزم بالمنهج والمستوى الذهني واللغوي المناسب للصف ${grade}.
-2. إذا كانت المرحلة ابتدائية: استخدم أسلوباً مبسطاً جداً، وأمثلة توضيحية.
-3. إذا كانت المرحلة متوسطة أو ثانوية: قدم شرحاً المنظم مقسماً لخطوات.
-4. استخدم التنسيق الواضح (نقاط، خط عريض) لتسهيل القراءة.
+1. التزم بالمنهج والمستوى الذهني واللغوي المناسب للصف ${grade || 'الحالي'}.
+2. إذا كانت المرحلة ابتدائية: استخدم أسلوباً مبسطاً جداً، وأمثلة توضيحية محببة.
+3. إذا كانت المرحلة متوسطة أو ثانوية: قدم شرحاً منظماً ومقسماً إلى خطوات منطقية.
+4. استخدم التنسيق الواضح (نقاط، خط عريض) لتسهيل القراءة والتعلم.
     `;
 
     // استخدام الموديل المستقر المحدث
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       systemInstruction: systemInstruction,
     });
 
     let parts = [];
 
+    // التعامل مع الصور في حال إرفاقها
     if (imageBase64 && mimeType) {
       parts.push({
         inlineData: {
@@ -39,6 +40,7 @@ export default async function handler(req, res) {
       });
     }
 
+    // إضافة نص السؤال أو الطلب
     parts.push({ text: prompt });
 
     const result = await model.generateContent({ contents: [{ role: 'user', parts }] });
@@ -48,6 +50,8 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ error: error.message || 'حدث خطأ أثناء معالجة الطلب.' });
+    return res.status(500).json({ 
+      error: error.message || 'حدث خطأ أثناء معالجة الطلب.' 
+    });
   }
 }
