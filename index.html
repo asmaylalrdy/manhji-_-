@@ -679,6 +679,7 @@
   };
 
   let lastAnswerPlainText = '';
+  let lastAnswerSubject = '';
 
   function updateGrades() {
     const stage = document.getElementById('stage').value;
@@ -807,34 +808,92 @@
     return matched || arabicVoices[0];
   }
 
-  function speakText(text, genderOverride) {
+  function pickEnglishVoice(preferredGender) {
+    if (!('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    const englishVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+    if (!englishVoices.length) return null;
+
+    const femaleHints = ['female', 'woman', 'samantha', 'victoria', 'zira', 'aria', 'jenny', 'claire'];
+    const maleHints = ['male', 'man', 'david', 'mark', 'daniel', 'guy', 'alex', 'arthur'];
+
+    const hints = preferredGender === 'male' ? maleHints : femaleHints;
+    const matched = englishVoices.find(v => {
+      const nameLower = (v.name || '').toLowerCase();
+      return hints.some(h => nameLower.includes(h));
+    });
+
+    return matched || englishVoices[0];
+  }
+
+  function splitBilingualSegments(text) {
+    const cleaned = cleanTextForSpeech(text);
+    if (!cleaned) return [];
+
+    // تقسيم النص إلى أجزاء عربية وأخرى إنجليزية لقراءة الإنجليزية بالإنجليزية والعربية بالعربية
+    const regex = /([A-Za-z0-9][A-Za-z0-9\s.,!?;:'"()\-]{1,180})/g;
+    const segments = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(cleaned)) !== null) {
+      if (match.index > lastIndex) {
+        const arPart = cleaned.slice(lastIndex, match.index).trim();
+        if (arPart) segments.push({ lang: 'ar', text: arPart });
+      }
+      const enPart = match[0].trim();
+      if (enPart && /[A-Za-z]{2,}/.test(enPart)) {
+        segments.push({ lang: 'en', text: enPart });
+      } else if (enPart) {
+        segments.push({ lang: 'ar', text: enPart });
+      }
+      lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < cleaned.length) {
+      const remaining = cleaned.slice(lastIndex).trim();
+      if (remaining) segments.push({ lang: 'ar', text: remaining });
+    }
+
+    return segments;
+  }
+
+  function speakText(text, genderOverride, subjectName) {
     if (!('speechSynthesis' in window)) {
       alert('المتصفح الحالي لا يدعم القراءة الصوتية.');
       return;
     }
 
-    const cleaned = cleanTextForSpeech(text);
-    if (!cleaned) return;
-
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(cleaned);
-    utterance.lang = 'ar';
-
     const gender = genderOverride || document.getElementById('voiceGender').value || 'female';
-    const voice = pickArabicVoice(gender);
-    if (voice) {
-      utterance.voice = voice;
-    }
+    const isEnglishSubject = (subjectName || '').includes('الإنجليزية');
 
-    utterance.pitch = gender === 'male' ? 0.85 : 1.15;
-    utterance.rate = 0.98;
+    const segments = isEnglishSubject
+      ? splitBilingualSegments(text)
+      : [{ lang: 'ar', text: cleanTextForSpeech(text) }];
 
-    window.speechSynthesis.speak(utterance);
+    segments.filter(s => s.text).forEach(seg => {
+      const utterance = new SpeechSynthesisUtterance(seg.text);
+      if (seg.lang === 'en') {
+        utterance.lang = 'en-US';
+        const enVoice = pickEnglishVoice(gender);
+        if (enVoice) utterance.voice = enVoice;
+        utterance.pitch = gender === 'male' ? 0.92 : 1.08;
+        utterance.rate = 0.92;
+      } else {
+        utterance.lang = 'ar';
+        const arVoice = pickArabicVoice(gender);
+        if (arVoice) utterance.voice = arVoice;
+        utterance.pitch = gender === 'male' ? 0.85 : 1.15;
+        utterance.rate = 0.98;
+      }
+      window.speechSynthesis.speak(utterance);
+    });
   }
 
   function replayCurrentAnswer() {
     if (!lastAnswerPlainText) return;
-    speakText(lastAnswerPlainText);
+    speakText(lastAnswerPlainText, null, lastAnswerSubject);
   }
 
   function stopSpeech() {
@@ -915,7 +974,7 @@
     const stage = document.getElementById('stage').value;
     const grade = document.getElementById('grade').value;
     const subject = document.getElementById('subject').value;
-    const cleanPrompt = promptText.trim() || 'اشرح المسألة أو الصفحة المرفقة بوضوح.';
+    const cleanPrompt = promptText.trim() || 'اشرح المسألة أو الصفحة المرفقة بوضوح باللغة العربية.';
 
     const payload = {
       stage,
@@ -940,6 +999,7 @@
       if (data.result) {
         consumeCredit();
         lastAnswerPlainText = data.result;
+        lastAnswerSubject = subject;
         responseTextEl.textContent = data.result;
         responseBox.style.display = 'block';
 
@@ -953,7 +1013,7 @@
 
         const mode = document.getElementById('mode').value;
         if (mode === 'audio' || mode === 'both') {
-          speakText(data.result);
+          speakText(data.result, null, subject);
         }
       } else {
         alert(data.error || 'حدث خطأ، حاول مرة أخرى.');
