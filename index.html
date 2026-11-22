@@ -3,85 +3,454 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منهجي - معلمك الذكي</title>
+  <meta name="theme-color" content="#0f4c81">
+  <title>منهجي - معلمك الذكي لطلاب السودان</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icon-192.png">
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --bg: #f8fafc;
+      --primary: #0f4c81;
+      --primary-dark: #093256;
+      --accent: #0ea5e9;
+      --accent-soft: #e0f2fe;
+      --success: #16a34a;
+      --success-hover: #15803d;
+      --bg-grad-start: #eef6ff;
+      --bg-grad-end: #f8fafc;
       --card-bg: #ffffff;
-      --text: #1e293b;
-      --border: #e2e8f0;
+      --surface: #f1f5f9;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+      --shadow: 0 10px 30px rgba(15, 76, 129, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: var(--bg);
+      background: linear-gradient(160deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
       color: var(--text);
       margin: 0;
-      padding: 20px;
+      padding: 16px;
+      min-height: 100vh;
       direction: rtl;
     }
 
     .container {
-      max-width: 600px;
+      max-width: 640px;
       margin: 0 auto;
       background: var(--card-bg);
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 22px;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(14, 165, 233, 0.16);
     }
 
-    .header { text-align: center; margin-bottom: 24px; }
-    .header h1 { margin: 0; color: var(--primary); font-size: 28px; }
-    .header p { margin-top: 6px; color: #64748b; font-size: 14px; }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .top-btn {
+      width: auto;
+      padding: 8px 14px;
+      font-size: 13px;
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--primary);
+      border: 1px solid var(--border);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .top-btn:hover {
+      background: var(--accent-soft);
+      transform: translateY(-1px);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #0f4c81 0%, #0284c7 100%);
+      color: #ffffff;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.3px;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      color: #e0f2fe;
+      font-size: 14px;
+    }
 
     .credits-badge {
       display: inline-block;
-      background: #e0e7ff;
-      color: #3730a3;
-      padding: 6px 12px;
-      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      color: #ffffff;
+      padding: 7px 14px;
+      border-radius: 999px;
       font-size: 13px;
-      font-weight: bold;
-      margin-top: 10px;
+      font-weight: 700;
+      margin-top: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    .form-group { margin-bottom: 16px; }
-    label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--primary-dark);
+    }
 
     select, input[type="text"], textarea, input[type="file"] {
-      width: 100%; padding: 12px; border: 1px solid var(--border);
-      border-radius: 10px; box-sizing: border-box; font-size: 14px; background-color: #fff;
+      width: 100%;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      background-color: #ffffff;
+      color: var(--text);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    button {
-      width: 100%; padding: 14px; background-color: var(--primary);
-      color: white; border: none; border-radius: 10px; font-size: 16px;
-      font-weight: bold; cursor: pointer; transition: background 0.2s;
+    select:focus, textarea:focus, input[type="file"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
     }
 
-    button:hover { background-color: var(--primary-hover); }
-    .bankak-btn { background-color: #16a34a; margin-top: 10px; }
-    .bankak-btn:hover { background-color: #15803d; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
 
-    /* صندوق عرض النتيجة */
+    @media (max-width: 520px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 16px;
+      }
+    }
+
+    button.main-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.2s ease;
+    }
+
+    button.main-btn:hover {
+      opacity: 0.96;
+      transform: translateY(-1px);
+    }
+
+    button.main-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .bankak-btn {
+      width: 100%;
+      padding: 13px;
+      background-color: var(--success);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s ease;
+    }
+
+    .bankak-btn:hover {
+      background-color: var(--success-hover);
+    }
+
+    .share-box {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .share-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .share-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .share-btn {
+      padding: 10px 8px;
+      border-radius: 10px;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: transform 0.15s ease, opacity 0.2s ease;
+    }
+
+    .share-btn:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .btn-whatsapp { background-color: #16a34a; }
+    .btn-telegram { background-color: #0284c7; }
+    .btn-copy { background-color: #334155; }
+
     #responseContainer {
-      margin-top: 24px; padding: 16px; border-radius: 12px;
-      background: #f1f5f9; border: 1px solid var(--border); display: none;
-      white-space: pre-line; line-height: 1.6;
+      margin-top: 22px;
+      padding: 18px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1.5px solid #bae6fd;
+      display: none;
+      white-space: pre-line;
+      line-height: 1.75;
     }
-    .loading { text-align: center; color: var(--primary); font-weight: bold; display: none; margin-top: 15px; }
+
+    .response-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .response-header h3 {
+      margin: 0;
+      color: var(--primary);
+      font-size: 17px;
+    }
+
+    .audio-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .audio-mini-btn {
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--primary-dark);
+      cursor: pointer;
+    }
+
+    .audio-mini-btn:hover {
+      background: var(--accent-soft);
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--primary);
+      font-weight: 700;
+      display: none;
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+    }
+
+    .footer-links {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .link-btn {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .link-btn:hover {
+      background: var(--accent-soft);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 520px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: #141124;
+      color: #f8fafc;
+      border-radius: 22px;
+      padding: 22px;
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    .modal-card.light-modal {
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .modal-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-top h2 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .close-btn {
+      background: rgba(255, 255, 255, 0.12);
+      color: inherit;
+      border: none;
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .dev-badge {
+      display: inline-block;
+      background: rgba(124, 58, 237, 0.28);
+      color: #ddd6fe;
+      border: 1px solid rgba(167, 139, 250, 0.4);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .dev-box {
+      text-align: center;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(167, 139, 250, 0.22);
+    }
+
+    .dev-name {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 6px 0 8px;
+      color: #ffffff;
+    }
+
+    .dev-desc {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.7;
+      margin: 0 0 14px;
+    }
+
+    .dev-email {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(250, 204, 21, 0.45);
+      color: #fde047;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .policy-text {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+
+    .policy-text p {
+      margin: 0 0 10px;
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
+  <div class="top-bar">
+    <button type="button" class="top-btn" onclick="openModal('settingsModal')">⚙️ الإعدادات</button>
+    <button type="button" class="top-btn" onclick="openModal('devModal')">👨‍💻 عن المطور</button>
+  </div>
+
   <div class="header">
     <h1>منهجي 📚</h1>
-    <p>معلمك الذكي لكل المواد والمراحل الدراسية</p>
+    <p>معلمك الذكي لطلاب السودان في مختلف المواد والمراحل الدراسية</p>
     <div class="credits-badge">الرصيد المجاني اليومي: <span id="creditsCount">5</span>/5 أسئلة</div>
   </div>
 
@@ -119,28 +488,115 @@
     <div class="form-group">
       <label for="mode">أسلوب الشرح:</label>
       <select id="mode">
-        <option value="text">نصي فقط</option>
-        <option value="audio">صوتي فقط</option>
-        <option value="both">نصي وصوتي</option>
+        <option value="both">نصي وصوتي 🔊</option>
+        <option value="text">نصي فقط 📝</option>
+        <option value="audio">صوتي فقط 🎧</option>
       </select>
     </div>
   </div>
 
   <div class="form-group">
-    <label for="imageInput">صورة الصفحة/المسألة (اختياري):</label>
+    <label for="voiceGender">صوت القراءة العربية:</label>
+    <select id="voiceGender" onchange="saveVoicePreference()">
+      <option value="female">صوت معلمة (امرأة) 👩‍🏫</option>
+      <option value="male">صوت معلم (رجل) 👨‍🏫</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="imageInput">صورة الصفحة / المسألة (اختياري):</label>
     <input type="file" id="imageInput" accept="image/*">
   </div>
 
   <div class="form-group">
     <label for="prompt">السؤال أو الدرس المطلوب شرحه:</label>
-    <textarea id="prompt" rows="4" placeholder="اكتب سؤالك هنا أو اطلب شرح درس معين من المنهج..."></textarea>
+    <textarea id="prompt" rows="4" placeholder="اكتب سؤالك هنا أو اطلب شرح درس معين من المنهج السوداني..."></textarea>
   </div>
 
-  <button id="submitBtn" onclick="sendQuery()">ابدأ الشرح الآن 🚀</button>
-  <button class="bankak-btn" onclick="openPaymentModal()">شحن رصيد / اشتراك عبر بنكك 💳</button>
+  <button type="button" id="submitBtn" class="main-btn" onclick="sendQuery()">ابدأ الشرح الآن 🚀</button>
+  <button type="button" class="bankak-btn" onclick="openPaymentModal()">شحن رصيد / اشتراك عبر بنكك 💳</button>
 
   <div id="loading" class="loading">جاري تحضير الشرح من المعلم الذكي... ⏳</div>
-  <div id="responseContainer"></div>
+
+  <div id="responseContainer">
+    <div class="response-header">
+      <h3>💡 الشرح</h3>
+      <div class="audio-controls">
+        <button type="button" class="audio-mini-btn" onclick="replayCurrentAnswer()">▶️ استماع</button>
+        <button type="button" class="audio-mini-btn" onclick="stopSpeech()">⏹ إيقاف</button>
+      </div>
+    </div>
+    <div id="responseText"></div>
+  </div>
+
+  <div class="share-box">
+    <div class="share-title">شارك تطبيق منهجي مع زملائك الطلاب:</div>
+    <div class="share-actions">
+      <a id="waShareLink" class="share-btn btn-whatsapp" href="#" target="_blank" rel="noopener noreferrer">واتساب</a>
+      <a id="tgShareLink" class="share-btn btn-telegram" href="#" target="_blank" rel="noopener noreferrer">تليجرام</a>
+      <button type="button" class="share-btn btn-copy" onclick="shareOrCopyApp()">نسخ / مشاركة</button>
+    </div>
+  </div>
+
+  <div class="footer-links">
+    <button type="button" class="link-btn" onclick="openModal('settingsModal')">الإعدادات</button>
+    <button type="button" class="link-btn" onclick="openModal('privacyModal')">سياسة الخصوصية</button>
+    <button type="button" class="link-btn" onclick="openModal('devModal')">تعريف بالمطور</button>
+  </div>
+</div>
+
+<!-- نافذة الإعدادات -->
+<div id="settingsModal" class="modal-backdrop" onclick="backdropClose(event, 'settingsModal')">
+  <div class="modal-card light-modal">
+    <div class="modal-top">
+      <h2>⚙️ إعدادات التطبيق</h2>
+      <button type="button" class="close-btn" onclick="closeModal('settingsModal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label for="modalVoiceGender">اختيار صوت الشرح الصوتي:</label>
+      <select id="modalVoiceGender" onchange="syncVoiceFromModal()">
+        <option value="female">صوت معلمة (امرأة) 👩‍🏫</option>
+        <option value="male">صوت معلم (رجل) 👨‍🏫</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <button type="button" class="top-btn" style="width:100%;" onclick="resetDailyCreditsTest()">إعادة ضبط عداد الأسئلة التجريبي</button>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة سياسة الخصوصية -->
+<div id="privacyModal" class="modal-backdrop" onclick="backdropClose(event, 'privacyModal')">
+  <div class="modal-card light-modal">
+    <div class="modal-top">
+      <h2>🔒 سياسة الخصوصية</h2>
+      <button type="button" class="close-btn" onclick="closeModal('privacyModal')">✕</button>
+    </div>
+    <div class="policy-text">
+      <p><strong>1. خصوصية الطالب:</strong> لا يطلب تطبيق <strong>منهجي</strong> إنشاء حسابات أو بيانات شخصية حساسة لاستخدام الشرح المجاني اليومي.</p>
+      <p><strong>2. الأسئلة والصور:</strong> تُرسل النصوص أو الصور المرفقة لمعالجة الشرح التعليمي المطلوب فقط عبر خدمة الذكاء الاصطناعي ولا تُستخدم لأغراض شخصية.</p>
+      <p><strong>3. الرصيد والإعدادات:</strong> تُحفظ تفضيلات الصوت والرصيد اليومي محلياً على متصفح جهازك.</p>
+      <p><strong>4. الدفع عبر بنكك:</strong> عند طلب شحن الرصيد، يتم التواصل المباشر لتأكيد الإيصال وتفعيل الباقة دون تخزين بيانات بنكية داخل التطبيق.</p>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة عن المطور -->
+<div id="devModal" class="modal-backdrop" onclick="backdropClose(event, 'devModal')">
+  <div class="modal-card">
+    <div class="modal-top">
+      <h2>منصة منهجي التعليمية</h2>
+      <button type="button" class="close-btn" onclick="closeModal('devModal')">✕</button>
+    </div>
+    <div class="dev-box">
+      <div class="dev-badge">عن المطور | Developer</div>
+      <div class="dev-name">Ismail Ahmed Ismail Mohammed</div>
+      <p class="dev-desc">
+        مطور تطبيقات الويب التقدمية (PWA) والمنصات التعليمية التفاعلية لخدمة الطلاب في السودان. للتواصل والاستفسارات التقنية أو تفعيل اشتراكات بنكك لتطبيق <strong>منهجي</strong>:
+      </p>
+      <a class="dev-email" href="mailto:asmaylalrdy744@gmail.com">✉️ asmaylalrdy744@gmail.com</a>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -150,11 +606,13 @@
     'ثانوي': ['الصف الأول الثانوي', 'الصف الثاني الثانوي', 'الصف الثالث الثانوي']
   };
 
+  let lastAnswerPlainText = '';
+
   function updateGrades() {
     const stage = document.getElementById('stage').value;
     const gradeSelect = document.getElementById('grade');
     gradeSelect.innerHTML = '';
-    
+
     gradesMap[stage].forEach(g => {
       const opt = document.createElement('option');
       opt.value = g;
@@ -163,9 +621,86 @@
     });
   }
 
-  updateGrades();
+  function initShareLinks() {
+    const appUrl = window.location.href;
+    const shareText = encodeURIComponent('جرّب تطبيق منهجي - معلمك الذكي لطلاب السودان في مختلف المواد والمراحل الدراسية: ' + appUrl);
+    document.getElementById('waShareLink').href = `https://wa.me/?text=${shareText}`;
+    document.getElementById('tgShareLink').href = `https://t.me/share/url?url=${encodeURIComponent(appUrl)}&text=${encodeURIComponent('تطبيق منهجي - معلمك الذكي لطلاب السودان')}`;
+  }
 
-  // تحويل الصورة إلى Base64
+  async function shareOrCopyApp() {
+    const appUrl = window.location.href;
+    const shareData = {
+      title: 'منهجي - معلمك الذكي',
+      text: 'تطبيق منهجي - معلمك الذكي لطلاب السودان',
+      url: appUrl
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (_) {}
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(appUrl);
+      alert('تم نسخ رابط التطبيق بنجاح! يمكنك لصقه في واتساب أو تليجرام.');
+    } else {
+      prompt('انسخ رابط التطبيق:', appUrl);
+    }
+  }
+
+  function loadVoicePreference() {
+    const saved = localStorage.getItem('manhaji_voice_gender') || 'female';
+    document.getElementById('voiceGender').value = saved;
+    document.getElementById('modalVoiceGender').value = saved;
+  }
+
+  function saveVoicePreference() {
+    const gender = document.getElementById('voiceGender').value;
+    localStorage.setItem('manhaji_voice_gender', gender);
+    document.getElementById('modalVoiceGender').value = gender;
+  }
+
+  function syncVoiceFromModal() {
+    const gender = document.getElementById('modalVoiceGender').value;
+    localStorage.setItem('manhaji_voice_gender', gender);
+    document.getElementById('voiceGender').value = gender;
+  }
+
+  function getTodayKey() {
+    const now = new Date();
+    return `manhaji_credits_${now.getFullYear()}_${now.getMonth() + 1}_${now.getDate()}`;
+  }
+
+  function loadCredits() {
+    const key = getTodayKey();
+    let val = localStorage.getItem(key);
+    if (val === null) {
+      val = '5';
+      localStorage.setItem(key, val);
+    }
+    document.getElementById('creditsCount').textContent = val;
+    return parseInt(val, 10);
+  }
+
+  function consumeCredit() {
+    const key = getTodayKey();
+    const current = loadCredits();
+    if (current > 0) {
+      const next = current - 1;
+      localStorage.setItem(key, String(next));
+      document.getElementById('creditsCount').textContent = String(next);
+    }
+  }
+
+  function resetDailyCreditsTest() {
+    localStorage.setItem(getTodayKey(), '5');
+    document.getElementById('creditsCount').textContent = '5';
+    alert('تمت إعادة ضبط الرصيد اليومي إلى 5/5 أسئلة.');
+  }
+
   function toBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -175,17 +710,88 @@
     });
   }
 
+  function cleanTextForSpeech(text) {
+    return text
+      .replace(/[*#_`~>-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function pickArabicVoice(preferredGender) {
+    if (!('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    const arabicVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ar'));
+    if (!arabicVoices.length) return null;
+
+    const femaleHints = ['female', 'woman', 'salma', 'hoda', 'laila', 'fatima', 'mariam', 'zainab', 'nahed', 'amira'];
+    const maleHints = ['male', 'man', 'tariq', 'tarik', 'hamed', 'hany', 'rami', 'omar', 'ahmed', 'mahmoud'];
+
+    const hints = preferredGender === 'male' ? maleHints : femaleHints;
+    const matched = arabicVoices.find(v => {
+      const nameLower = (v.name || '').toLowerCase();
+      return hints.some(h => nameLower.includes(h));
+    });
+
+    return matched || arabicVoices[0];
+  }
+
+  function speakText(text, genderOverride) {
+    if (!('speechSynthesis' in window)) {
+      alert('المتصفح الحالي لا يدعم القراءة الصوتية.');
+      return;
+    }
+
+    const cleaned = cleanTextForSpeech(text);
+    if (!cleaned) return;
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(cleaned);
+    utterance.lang = 'ar';
+
+    const gender = genderOverride || document.getElementById('voiceGender').value || 'female';
+    const voice = pickArabicVoice(gender);
+    if (voice) {
+      utterance.voice = voice;
+    }
+
+    utterance.pitch = gender === 'male' ? 0.85 : 1.15;
+    utterance.rate = 0.98;
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function replayCurrentAnswer() {
+    if (!lastAnswerPlainText) return;
+    speakText(lastAnswerPlainText);
+  }
+
+  function stopSpeech() {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  }
+
   async function sendQuery() {
     const promptText = document.getElementById('prompt').value;
     const imageFile = document.getElementById('imageInput').files[0];
     const loading = document.getElementById('loading');
     const responseBox = document.getElementById('responseContainer');
+    const responseTextEl = document.getElementById('responseText');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const credits = loadCredits();
+    if (credits <= 0) {
+      alert('لقد أنهيت رصيدك المجاني اليومي (5 أسئلة). يمكنك الشحن والاشتراك عبر بنكك للاستمرار.');
+      return;
+    }
 
     if (!promptText.trim() && !imageFile) {
       alert('الرجاء كتابة سؤال أو رفع صورة للدرس.');
       return;
     }
 
+    stopSpeech();
+    submitBtn.disabled = true;
     loading.style.display = 'block';
     responseBox.style.display = 'none';
 
@@ -197,13 +803,17 @@
       mimeType = imageFile.type;
     }
 
+    const stage = document.getElementById('stage').value;
+    const grade = document.getElementById('grade').value;
+    const subject = document.getElementById('subject').value;
+
     const payload = {
-      stage: document.getElementById('stage').value,
-      grade: document.getElementById('grade').value,
-      subject: document.getElementById('subject').value,
-      prompt: promptText,
-      imageBase64: imageBase64,
-      mimeType: mimeType
+      stage,
+      grade,
+      subject,
+      prompt: `طالب سوداني (${stage} - ${grade} - مادة ${subject}): ${promptText.trim() || 'اشرح المسألة أو الصفحة المرفقة بوضوح.'}`,
+      imageBase64,
+      mimeType
     };
 
     try {
@@ -215,12 +825,14 @@
 
       const data = await res.json();
       loading.style.display = 'none';
+      submitBtn.disabled = false;
 
       if (data.result) {
-        responseBox.innerHTML = `<h3>💡 الشرح:</h3>` + data.result;
+        consumeCredit();
+        lastAnswerPlainText = data.result;
+        responseTextEl.textContent = data.result;
         responseBox.style.display = 'block';
-        
-        // القراءة الصوتية إذا اختار خيار الصوتي
+
         const mode = document.getElementById('mode').value;
         if (mode === 'audio' || mode === 'both') {
           speakText(data.result);
@@ -230,22 +842,47 @@
       }
     } catch (err) {
       loading.style.display = 'none';
+      submitBtn.disabled = false;
       alert('تعذر الاتصال بالسيرفر. تأكد من إضافة GEMINI_API_KEY في Vercel.');
     }
   }
 
-  function speakText(text) {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ar-SA';
-      window.speechSynthesis.speak(utterance);
+  function openPaymentModal() {
+    alert('طريقة الاشتراك عبر بنكك (طلاب السودان):\n1. قم بتحويل مبلغ الاشتراك لحساب بنكك المعتمد.\n2. أرسل صورة إيصال التحويل مع اسمك ورقمك عبر البريد أو الواتساب لتفعيل حسابك فوراً.');
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.add('active');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+
+  function backdropClose(event, id) {
+    if (event.target.id === id) {
+      closeModal(id);
     }
   }
 
-  function openPaymentModal() {
-    alert('طريقة الاشتراك عبر بنكك:\n1. قم بتحويل مبلغ الاشتراك لحساب بنكك.\n2. أرسل إيصال التحويل عبر الواتساب لتفعيل حسابك فوراً.');
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.getVoices();
+    };
   }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch((err) => {
+        console.error('ServiceWorker registration failed:', err);
+      });
+    });
+  }
+
+  updateGrades();
+  loadVoicePreference();
+  loadCredits();
+  initShareLinks();
 </script>
 
 </body>
